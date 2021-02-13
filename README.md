@@ -8,12 +8,12 @@ assembly. Do not expect excellent or bug-free code in this project.__
 
 ------
 
-### Notes
+## Notes
 ------
 * My logo has been omitted from this code labeled 'Zaid' in ROM0's Data
 section. Feel free to replace it with your own.
 
-### Links
+## Links
 ------
 * OpenAlchemist by Guillaume "Keph" Delhumeau and Antoine "guigoz" Morineau
   - http://www.openalchemist.com/index.php
