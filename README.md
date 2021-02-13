@@ -1,4 +1,4 @@
-<div style="text-align:center;">
+<div style="text-align:center; width: 100%;">
   <img src="https://github.com/ZaidMade/AlchemyQuest/raw/master/logo.png" alt="AlchemyQust">
 </div>
 An implementation of OpenAlchemist by Guillaume "Keph" Delhumeau and
