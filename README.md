@@ -8,7 +8,7 @@ assembly. Do not expect excellent or bug-free code in this project.__
 
 ### Links:
 * OpenAlchemist by Guillaume "Keph" Delhumeau and Antoine "guigoz" Morineau
-  http://www.openalchemist.com/index.php
+  - http://www.openalchemist.com/index.php
 * Graphics by usr_share
-  https://opengameart.org/users/usrshare
-  https://opengameart.org/content/openalchemist-gb-style-art
+  - https://opengameart.org/users/usrshare
+  - https://opengameart.org/content/openalchemist-gb-style-art
