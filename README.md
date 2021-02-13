@@ -1,4 +1,4 @@
-# AlchemyQuest for GameBoy
+![alt text](https://github.com/ZaidMade/AlchemyQuest/raw/master/logo.png "AlchemyQuest")
 An implementation of OpenAlchemist by Guillaume "Keph" Delhumeau and
 Antoine "guigoz" Morineau using graphics based on OpenAlchemist, made for the
 GameBoy, by usr_share on OpenGameArt.
