@@ -155,7 +155,7 @@ Start:
     jr nz, .clearLogo
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Copy the title screen to the tilemap                                         ;
+; Copy the title screen to the tilemap                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ld hl, $9800
     ld de, TitleScreen
@@ -190,30 +190,31 @@ Start:
     or c                                ; check if zero
     jr nz, .copyTitleScreen             ; if not zero, reset value and restart
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Copy the title to the tilemap                                      		  ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ld hl, $9862
+    ld de, TitleMap
+    ld bc, TitleMapEnd - TitleMap
+.loadTitleMap
+    REPT 16
+    ld a, [de]
+    add a, ((FontEnd - Font) / 16) + ((TilesEnd - Tiles) / 16) + 1
+    ld [hli], a
+    inc de
+    dec bc
+    ENDR
 
+    ld a, l
+    add a, 16
+    ld l, a
+    ld a, h
+    adc a, 0
+    ld h, a
 
-    ;ld hl, $9862
-    ;ld de, TitleMap
-    ;ld bc, TitleMapEnd - TitleMap
-;.loadTitleMap
-    ;REPT 16
-    ;ld a, [de]
-    ;add a, ((FontEnd - Font) / 16) + ((TilesEnd - Tiles) / 16) + 1
-    ;ld [hli], a
-    ;inc de
-    ;dec bc
-    ;ENDR
-
-    ;ld a, l
-    ;add a, 16
-    ;ld l, a
-    ;ld a, h
-    ;adc a, 0
-    ;ld h, a
-
-    ;ld a, b
-    ;or c
-    ;jr nz, .loadTitleMap
+    ld a, b
+    or c
+    jr nz, .loadTitleMap
 
 ; Turn screen on, display background
     ld  a, %10010001
@@ -229,7 +230,7 @@ Start:
 SECTION "Data", ROM0
 
 Font:
-INCBIN "dat/font.2bpp"                                  ; font image data
+INCBIN "font.2bpp"                                  ; font image data
 FontEnd:
 
 URL:
@@ -257,5 +258,5 @@ INCBIN "logo.tilemap"     ; game logo tile map
 TitleMapEnd:
 
 TitleScreen:
-INCBIN "board.tilemap"    ; ti
+INCBIN "titlescreen.tilemap"    ; ti
 TitleScreenEnd:
