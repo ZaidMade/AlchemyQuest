@@ -1,5 +1,5 @@
 <div style="text-align:center; width: 100%;">
-  <img src="https://github.com/ZaidMade/AlchemyQuest/raw/master/logo.png" alt="AlchemyQust">
+  <img src="https://github.com/ZaidMade/AlchemyQuest/raw/master/logo.png" alt="AlchemyQuest" title="AlchemyQuest">
 </div>
 An implementation of OpenAlchemist by Guillaume "Keph" Delhumeau and
 Antoine "guigoz" Morineau using graphics based on OpenAlchemist, made for the
