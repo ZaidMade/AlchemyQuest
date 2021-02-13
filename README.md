@@ -3,9 +3,10 @@
 </div>
 
 
-An implementation of OpenAlchemist by Guillaume "Keph" Delhumeau and
-Antoine "guigoz" Morineau using graphics based on OpenAlchemist, made for the
-GameBoy, by usr_share on OpenGameArt.
+An implementation of *OpenAlchemist* by *Guillaume "Keph" Delhumeau* and
+*Antoine "guigoz" Morineau* using graphics based on OpenAlchemist, made for the
+GameBoy, by *usr_share* on OpenGameArt. Created using the *Rednex Gameboy
+Development System*.
 
 
 __This is a learning project for me to become more familiar with writing
@@ -22,3 +23,5 @@ section. Feel free to replace it with your own.
 * Graphics by usr_share
   - https://opengameart.org/users/usrshare
   - https://opengameart.org/content/openalchemist-gb-style-art
+* Rednex GameBoy Development System (rgbds)
+  - https://github.com/gbdev/rgbds
