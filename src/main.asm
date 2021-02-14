@@ -3,6 +3,9 @@ INCLUDE "memory.asm"
 INCLUDE "joypad.asm"
 INCLUDE "display.asm"
 
+INCLUDE "data.asm"
+INCLUDE "intro.asm"
+
 SECTION "VBlank_Interrupt", ROM0[$40]
   nop
   ret
@@ -25,110 +28,11 @@ ENDR
 SECTION "Code", ROM0
 
 Start:
-; turn off the LCD
-    xor a
-    ld  [rLCDC], a
-
-; load the font into VRAM
-    ld hl, Font
-    ld de, _VRAM + 16
-    ld bc, FontEnd - Font
-    call mem_Copy
-
-; load the logo into VRAM
-    ld  hl, Logo
-    ld  de, _VRAM + 16 + (FontEnd - Font)
-    ld  bc, LogoEnd - Logo
-    call mem_Copy
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Load the logo tiles into the background tile map at _SCRN0:                 ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld hl, $9881
-    ld de, LogoMap
-    ld bc, LogoMapEnd - LogoMap
-.copyLogoMap
-    push bc                            ; push the byte count to the stack
-    ld bc, 18                          ; set the byte count to a hChunk (18)
-.copyLogoMap_load
-    ld a, [de]                         ; Load tile key from LogoMap
-    add a, ((FontEnd - Font) / 16) + 1 ; Fix tile key to map after the font
-    ld [hli], a                        ; Set _SCRN0++ to the tile key
-    inc de                             ; increment the data pointer
-    dec bc                             ; decrement the chunk byte counter
-
-    ld a, b
-    or c                               ; check if chunk if fully loaded
-    jr nz, .copyLogoMap_load           ; load more
-
-    ld a, l
-    add a, 14                          ; skip over off screen tile space
-    ld l, a
-    ld a, h
-    adc a, 0                           ; add the carry
-    ld h, a
-
-    pop bc                             ; pop total byte count from stack
-    ld a, c
-    sub 18                             ; subtract 18 from the lower byte
-    ld c, a
-    ld a, b
-    sbc 0                              ; subtract the carry from the higher byte
-    ld b, a
-    or c                               ; check if zero
-    jr nz, .copyLogoMap                ; if not zero, reset value and restart
-
-; load the URL tiles into the tilemap at _SCRN0
-    ld hl, URL
-    ld de, $99a5
-    ld bc, URLEnd - URL
-    call mem_Copy
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialize the device to display the logo:                                  ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.device_init
-; set background palette to 0
-    xor a
-    ld  [rBGP], a
-
-; set the view window to 0, 0
-    xor a
-    ld  [rSCY], a
-    ld  [rSCX], a
-; turn sound off
-    ld  [rNR52], a
-
-; turn lcd on, display background
-    ld  a, %10010001
-    ld  [rLCDC], a
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Display the logo and hold it:                                               ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    call display_fadeIn
-    ld de, $0000
-.logoHold
-; fade the logo out if there's user input
-    call jpad_GetKeys
-    cp 0
-    jr nz, .logoEnd
-
-    dec e
-    jr nz, .logoHold
-    dec d
-    jr nz, .logoHold
-.logoEnd
-    call display_fadeOut
+	call Intro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Load the game tiles and graphics into VRAM:                                 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; turn the lcd off
-    call display_waitVBlank
-    xor a
-    ld [rLCDC], a
-
 ; load tiles into VRAM after the font
     ld hl, Tiles
     ld de, _VRAM + 16 + (FontEnd - Font)
@@ -140,19 +44,6 @@ Start:
     ld de, _VRAM + 16 + (FontEnd - Font) + (TilesEnd - Tiles)
     ld bc, TitleEnd - Title
     call mem_Copy
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Clears the logo from the tilemap                                            ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld hl, $98b2
-    ld bc, $99af - $98b2
-.clearLogo
-    xor a
-    ld [hli], a
-    dec bc
-    ld a, b
-    or c
-    jr nz, .clearLogo
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Copy the title screen to the tilemap                                        ;
@@ -221,42 +112,72 @@ Start:
     ld  [rLCDC], a
 ; Fade it in
     call display_fadeIn
-; lockup at the end
-.lockup
-    call display_waitVBlank
-    xor a
-    jr .lockup
 
-SECTION "Data", ROM0
+; scroll to the next screen at the end
+	ld hl, $9814
+	ld de, BoardScreen
+	ld bc, BoardScreenEnd - BoardScreen
+.loop
+	push bc
+	push de
 
-Font:
-INCBIN "font.2bpp"                                  ; font image data
-FontEnd:
+	ld de, $0000
+.hold
+; trigger the window scroll
+    ;call jpad_GetKeys
+    ;cp 0
+    ;jr nz, .logoEnd
 
-URL:
-  db $06, $19, $21, $1c, $0a, $1f, $19, $25, $1d, $2b   ; "zaid.games"
-URLEnd:
+	dec e
+	jr nz, .hold
+	dec d
+	jr nz, .hold
 
-Logo:
-INCBIN "zaid.2bpp"        ; my logo image data
-LogoEnd:
+	pop de
 
-LogoMap:
-INCBIN "zaid.tilemap"     ; my logo tile map
-LogoMapEnd:
+;$9a34
+	ld a, e
+	cp $34
+	jr nz, .continue
+	ld a, d
+	cp $9a
+	jr z, .skip
+.continue
 
-Tiles:
-INCBIN "tiles.2bpp"       ; game tiles
-TilesEnd:
+	ld bc, 18
+	call display_waitVBlank
+.load_board
+	ld a, [de]
+	ld [hli], a
+	inc h
+	inc h
+	; TODO implement to where it increments l if at bottom of screen
+	inc d
+	inc d
+	dec bc
 
-Title:
-INCBIN "logo.2bpp"        ; game logo tiles
-TitleEnd:
+	ld a, b
+	or c
+	jr nz, .load_board
 
-TitleMap:
-INCBIN "logo.tilemap"     ; game logo tile map
-TitleMapEnd:
+	pop bc
+	ld a, c
+	sub 18
+	ld c, a
+	ld a, b
+	adc 0
+	ld b, a
 
-TitleScreen:
-INCBIN "titlescreen.tilemap"    ; ti
-TitleScreenEnd:
+.skip
+
+	ld a, [rSCX]
+	inc a
+	ld [rSCX], a
+	cp 160
+    jr nz, .loop
+
+.lock
+	xor a
+	jr .lock
+
+	call display_waitVBlank

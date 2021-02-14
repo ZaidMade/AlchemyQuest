@@ -14,8 +14,9 @@ assembly. Do not expect excellent or bug-free code in this project.__
 
 
 ## Notes
-* My logo has been omitted from this code labeled 'Zaid' in ROM0's Data
-section. Feel free to replace it with your own.
+* My logo has been omitted from this code labeled 'Logo' INCBIN `zaid.2bpp` and
+`zaid.tilemap` in ROM0's "Data" section in `src/data.asm`.
+Feel free to replace it with your own.
 
 ## Links
 * OpenAlchemist by Guillaume "Keph" Delhumeau and Antoine "guigoz" Morineau
