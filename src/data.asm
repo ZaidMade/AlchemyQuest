@@ -8,7 +8,7 @@ INCBIN "font.2bpp"                                  	; font image data
 FontEnd:
 
 URL:
-  db $06, $19, $21, $1c, $0a, $1f, $19, $25, $1d, $2b	; "zaid.games"
+	db $06, $19, $21, $1c, $0a, $1f, $19, $25, $1d, $2b	; "zaid.games"
 URLEnd:
 
 Logo:
