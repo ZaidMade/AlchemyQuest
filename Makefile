@@ -1,5 +1,6 @@
 # Currently using Rednex v0.4.2
 build: include/joypad.asm include/memory.asm src/*
+	if [ -d "./bin" ]; then exit 0; else mkdir ./bin; fi
 	rgbasm -i include/ -i data/ -i src/ -o bin/out.o src/*
 	rgblink -o bin/out.gb bin/out.o
 	rgbfix -p0 -v bin/out.gb
