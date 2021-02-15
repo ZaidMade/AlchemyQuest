@@ -16,19 +16,6 @@ WindowScrollRight:
 	push hl
 	push de
 
-; set a counter
-	ld de, $0000
-.scroll_hold
-; keep decrementing de until a full rollover occurs
-	dec e
-	jr nz, .scroll_hold
-	;dec d
-	;jr nz, .scroll_hold
-
-; reset de to before being used as a counter
-	pop de
-	push de
-
 .scroll_continue
 	ld bc, 18						; ld bc with the chunk amount to load
 
@@ -91,7 +78,18 @@ WindowScrollRight:
 	sbc 0
 	ld b, a
 
+.scroll_skip_pre
+	push de
+	ld de, $0000
+
 .scroll_skip
+	dec e
+	jr nz, .scroll_skip
+
+	pop de
+
+	call display_waitVBlank
+
 ; scroll the screen
 	ld a, [rSCX]
 	inc a
@@ -105,6 +103,6 @@ WindowScrollRight:
 	ld a, b
 	or c
 	jr nz, .scroll_start	; if it's not, load another chunk
-	jr .scroll_skip			; otherwise just keep scrolling
+	jr .scroll_skip_pre			; otherwise just keep scrolling
 
 ENDC	; END GAME_ASM
